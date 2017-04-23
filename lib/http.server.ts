@@ -1,4 +1,4 @@
-import http = require('http');
+import * as http from 'http';
 import {InternalServerError, NotFound, Unauthorized} from './errors';
 import {getRegister, postRegister} from './registers';
 
@@ -22,7 +22,7 @@ async function handlePost(url, body, register) {
   for (const key of postRegister.keys()) {
     if (url === key) {
 
-      // retrieving method record from register
+      // retrieving endpoint record from register
       const postRecord = postRegister.get(key);
       const serviceName = postRecord.service;
       const methodName = postRecord.name;
@@ -30,10 +30,10 @@ async function handlePost(url, body, register) {
 
       // retrieving method arguments from body
       // according to method parameters
-      const params = postRecord.params;
+      const params = postRecord.parameters;
       const args = [];
-      for (const param of params) {
-        args.push(body[param]);
+      for (const parameter of params) {
+        args.push(body[parameter.name]);
       }
 
       // executing method
@@ -81,7 +81,11 @@ export function httpServer (serviceInstanceRegister) {
         const body = JSON.parse(rawBody);
         handlePost(request.url, body, serviceInstanceRegister)
           .then(output => {
-            response.end(output);
+            if (output) {
+              response.end(output);
+            } else {
+              response.end();
+            }
           })
           .catch(err => {
             if (err instanceof Unauthorized) {

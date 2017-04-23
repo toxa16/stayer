@@ -2,5 +2,6 @@
 .idea
 
 # Directories
-node_modules
+demo
 dist
+node_modules

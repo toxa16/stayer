@@ -1,20 +1,31 @@
-import {postRegister} from './registers';
+import {constraintRegister, postRegister} from './registers';
 import getMethodParamNames from './get-method-param-names';
+import {logger} from './logger';
+import {Parameter} from './parameter';
+import {Endpoint} from './endpoint';
+
 
 export function Post(path: string) {
   return function (target: any, methodName: string) {
-    const serviceName = target.constructor.name;
+    const serviceName = target.name || target.constructor.name;
 
-    console.log(`Post - ${serviceName}: ${methodName}`);
+    logger.log(`\tPost - ${serviceName}: ${methodName}`);
 
-    const params = getMethodParamNames(target[methodName]);
-    console.log(params);
+    const paramNames = getMethodParamNames(target[methodName]);
+    const parameters: Parameter[] = [];
+    paramNames.forEach((name, index) => {
+      const constraints = constraintRegister.get(index);
+      const parameter: Parameter = { name, constraints };
+      parameters.push(parameter);
+    });
+    constraintRegister.clear();
 
-    const method = {
+    const endpoint: Endpoint = {
       service: serviceName,
       name: methodName,
-      params: params,
+      parameters: parameters,
     };
-    postRegister.set(path, method);
+    console.log(endpoint);
+    postRegister.set(path, endpoint);
   }
 }
