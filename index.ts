@@ -1,18 +1,16 @@
-export {Service} from './lib/service';
+export {Service} from './lib/decorators/service';
 
 export {bootstrap} from './lib/bootstrap';
 
-export {Get} from './lib/get';
+export {Get} from './lib/decorators/get';
 
-export {Injection} from './lib/injection';
+export {Injection} from './lib/decorators/injection';
 
-export {Post} from './lib/post';
+export {Post} from './lib/decorators/post';
 
-export {InternalServerError, NotFound, Unauthorized} from './lib/errors';
+export {BadRequest, InternalServerError, NotFound, Unauthorized} from './lib/http/errors';
 
-// TODO: make the registers private
-export {getRegister, postRegister} from './lib/registers';
-
-export {required} from './lib/required';
-export {minlength} from './lib/minlength';
-export {pattern} from './lib/pattern';
+export {email} from './lib/decorators/email';
+export {minlength} from './lib/decorators/minlength';
+export {pattern} from './lib/decorators/pattern';
+export {required} from './lib/decorators/required';

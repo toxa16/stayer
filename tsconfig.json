@@ -10,6 +10,7 @@
   },
   "exclude": [
     "dist",
+    "log",
     "node_modules"
   ]
 }

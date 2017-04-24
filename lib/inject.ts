@@ -1,28 +1,27 @@
-import {
-  injectionFactoryRegister,
-  serviceRegister
-} from './registers';
+import {Register} from './types/register';
+import {Descriptor} from './types/descriptor';
 
 
-export function inject(rootService): Promise<any> {
-  return Promise.all(injectionFactoryRegister.values())
+export function inject(rootService, register: Register): Promise<Descriptor> {
+  return Promise.all(register.injectionFactories)
     .then(values => {
       const injections = [];
-      for (let key of injectionFactoryRegister.keys()) {
+      for (let key of register.injectionNames) {
         injections[key] = values.shift();
       }
 
-      const serviceInstanceRegister: Map<string, any> = new Map();
-      for (let service of serviceRegister.keys()) {
+      const serviceInstances: Map<string, Object> = new Map();
+      for (let service of register.serviceConstructors) {
         const args = [];
-        for (let dependency of serviceRegister.get(service)) {
+        for (let dependency of register.getServiceDependencies(service)) {
           args.push(injections[dependency.name]);
         }
         const instance = new service(...args);
 
-        serviceInstanceRegister.set(service.name, instance);
+        serviceInstances.set(service.name, instance);
       }
 
-      return serviceInstanceRegister;
+      return new Descriptor(register.getEndpoints(), serviceInstances);
     });
+    // TODO: implement CATCH
 }
