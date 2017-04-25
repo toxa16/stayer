@@ -20,6 +20,10 @@ export class NotFound extends HttpError {
   statusCode = 404;
 }
 
+export class Conflict extends HttpError {
+  statusCode = 409;
+}
+
 export class InternalServerError extends HttpError {
   statusCode = 500;
 }
