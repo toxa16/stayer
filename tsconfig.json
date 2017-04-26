@@ -6,11 +6,12 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "outDir": "./dist",
-    "declaration": true
+    "declaration": false
   },
   "exclude": [
     "dist",
     "log",
-    "node_modules"
+    "node_modules",
+    "trash"
   ]
 }

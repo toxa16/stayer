@@ -1,16 +1,15 @@
 {
   "name": "stayer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Node.js & TypeScript framework for building REST APIs.",
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Anton Bahurinsky",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^7.0.12",
     "reflect-metadata": "^0.1.10"
   },
   "engines": {
@@ -19,5 +18,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/toxa16/stayer.git"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.63",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^7.0.13",
+    "lodash": "^4.17.4",
+    "mocha": "^3.3.0"
   }
 }

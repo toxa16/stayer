@@ -1,10 +1,10 @@
-export {Service} from './service';
-export {Injection} from './injection';
+export {Service} from './class/service';
+export {Injection} from './class/injection';
 
-export {Get} from './get';
-export {Post} from './post';
+export {Get} from './method/get';
+export {Post} from './method/post';
 
-export {email} from './email';
-export {minlength} from './minlength';
+export {email} from './parameter/email';
+export {minlength} from './parameter/minlength';
 //export {pattern} from './pattern';
-export {required} from './required';
+export {required} from './parameter/required';

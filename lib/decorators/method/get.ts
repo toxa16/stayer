@@ -1,6 +1,6 @@
-import {register} from '../registers';
-import {EndpointMethod} from '../types/endpoint-method';
-import {logger} from '../logger';
+import {endpointRegister} from '../../registers/endpoint.register';
+import {EndpointMethod} from '../../types/endpoint-method';
+import {logger} from '../../logger';
 
 
 
@@ -9,7 +9,7 @@ export function Get(route: string) {
     const serviceName = service.name || service.constructor.name;
     //logger.log(`\tGet - ${serviceName}: ${endpointName}`);
 
-    register.registerEndpoint(
+    endpointRegister.register(
       endpointName, service, EndpointMethod.Get, route);
   }
 }

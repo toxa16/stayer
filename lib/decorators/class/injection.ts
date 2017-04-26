@@ -1,4 +1,4 @@
-import {register} from '../registers';
+import {injectionRegister} from '../../registers/injection.register';
 
 
 export interface InjectionOptions {
@@ -7,8 +7,7 @@ export interface InjectionOptions {
 
 export function Injection(options: InjectionOptions) {
   return function (constructor) {
-    //console.log(`\t${constructor.name} - injection executed`);
     const injectionName = constructor.name;
-    register.registerInjection(injectionName, options.factory());
+    injectionRegister.register(injectionName, options.factory());
   }
 }

@@ -1,17 +1,18 @@
 import * as http from 'http';
 import {HttpError, NotFound} from './errors';
 import {EndpointMethod} from '../types/endpoint-method';
-import {Descriptor} from '../types/descriptor';
+import {APIDescriptor} from '../types/api-descriptor';
 import {handlePost} from './handle-post';
+import {ServerOptions} from '../bootstrap';
 
 
-async function handleGet(url, descriptor: Descriptor) {
+async function handleGet(url, descriptor: APIDescriptor) {
   const endpoints = descriptor.getEndpoints(EndpointMethod.Get);
   for (const endpoint of endpoints) {
     if (endpoint.route === url) {
       const serviceName = endpoint.serviceName;
       const endpointName = endpoint.name;
-      const service = descriptor.getService(serviceName);
+      const service = descriptor.getServiceInstance(serviceName);
 
       return JSON.stringify(await service[endpointName]());
     }
@@ -22,7 +23,7 @@ async function handleGet(url, descriptor: Descriptor) {
       const value = getRegister.get(key);
       const serviceName = value.serviceName;
       const methodName = value.name;
-      const service = descriptor.getService(serviceName);
+      const service = descriptor.getServiceInstance(serviceName);
 
       return JSON.stringify(await service[methodName]());
     }
@@ -32,8 +33,27 @@ async function handleGet(url, descriptor: Descriptor) {
 
 
 
-export function httpServer(descriptor: Descriptor) {
-  const server = http.createServer(function (request, response) {
+function parseBody(request): Promise<Object> {
+
+  // TODO: do with Buffer
+
+  return new Promise((resolve, reject) => {
+    let rawBody = '';
+    request.on('data', (chunk) => {
+      rawBody += chunk;
+    });
+    request.on('end', () => {
+      (rawBody === '') ? resolve() : resolve(JSON.parse(rawBody))
+    });
+    request.on('error', (err) => {
+      reject(err);
+    })
+  });
+}
+
+
+export function httpServer(descriptor: APIDescriptor, options: ServerOptions) {
+  const server = http.createServer(async function (request, response) {
 
     //TODO: restrict CORS for production
     //TODO: check if it is possible to disable CORS for API usage on mobile
@@ -58,7 +78,22 @@ export function httpServer(descriptor: Descriptor) {
         });
     }
     else if (request.method === 'POST') {
-      let rawBody = '';
+
+      try {
+        const body = await parseBody(request);
+        const output = await handlePost(request.url, body, descriptor);
+        (!!output) ? response.end(output) : response.end();
+      } catch (err) {
+        if (err instanceof HttpError) {
+          response.statusCode = err.statusCode;
+          (!!err.message) ? response.end(err.message) : response.end();
+        } else {
+          throw err;
+        }
+      }
+
+
+      /*let rawBody = '';
       request.on('data', function (data) {
         rawBody += data;
       });
@@ -76,7 +111,7 @@ export function httpServer(descriptor: Descriptor) {
               throw err;
             }
           });
-      });
+      });*/
     }
     else if (request.method === 'OPTIONS') {
       // TODO: implement OPTIONS
@@ -88,7 +123,7 @@ export function httpServer(descriptor: Descriptor) {
     }
   });
 
-  server.listen(8080, function () {
-    console.log(`Stayer server listening on port ${server.address().port}...`);
+  server.listen(options.port, function () {
+    options.onListen(server.address().port);
   });
 }

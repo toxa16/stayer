@@ -1,6 +1,6 @@
-import {constraintRegister} from '../registers';
-import {ConstraintType} from '../types/constraint-type';
-import {logger} from '../logger';
+import {constraintRegister} from '../../registers/constraint.register';
+import {ConstraintType} from '../../types/constraint-type';
+import {logger} from '../../logger';
 
 
 export function minlength(minChars: number) {

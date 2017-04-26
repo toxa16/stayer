@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import {register} from '../registers';
-import {logger} from '../logger';
+import {logger} from '../../logger';
+import {serviceRegister} from '../../registers/service.register';
 
 
 export interface ServiceOptions {
@@ -20,6 +20,6 @@ export function Service(options: ServiceOptions) {
     const paramsTypes =
       Reflect.getMetadata('design:paramtypes', constructor);
 
-    register.registerService(constructor, paramsTypes);
+    serviceRegister.register(constructor, paramsTypes);
   }
 }

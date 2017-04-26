@@ -1,6 +1,6 @@
-import {register} from '../registers';
-import {EndpointMethod} from '../types/endpoint-method';
-import {logger} from '../logger';
+import {endpointRegister} from '../../registers/endpoint.register';
+import {EndpointMethod} from '../../types/endpoint-method';
+import {logger} from '../../logger';
 
 
 export function Post(route: string) {
@@ -8,7 +8,7 @@ export function Post(route: string) {
     const serviceName = service.name || service.constructor.name;
     //logger.log(`\tPost - ${serviceName}: ${endpointName}`);
 
-    register.registerEndpoint(
+    endpointRegister.register(
       endpointName, service, EndpointMethod.Post, route);
   }
 }

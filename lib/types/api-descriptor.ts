@@ -2,7 +2,7 @@ import {Endpoint} from './endpoint';
 import {EndpointMethod} from './endpoint-method';
 
 
-export class Descriptor {
+export class APIDescriptor {
 
   constructor(
     private endpoints: Endpoint[],
@@ -19,7 +19,7 @@ export class Descriptor {
     return endpoints;
   }
 
-  getService(serviceName: string): Object {
+  getServiceInstance(serviceName: string): Object {
     return this.services.get(serviceName);
   }
 }

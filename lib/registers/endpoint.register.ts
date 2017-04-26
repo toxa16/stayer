@@ -1,13 +1,11 @@
-import {Endpoint} from './endpoint';
-import {ConstraintRegister} from './constraint-register';
-import {Parameter} from './parameter';
-import {EndpointMethod} from './endpoint-method';
+import {Endpoint} from '../types/endpoint';
+import {ConstraintRegister, constraintRegister} from './constraint.register';
+import {Parameter} from '../types/parameter';
+import {EndpointMethod} from '../types/endpoint-method';
 
 
-export class Register {
+export class EndpointRegister {
   private endpoints: Endpoint[] = [];
-  private injections: Map<string, Function> = new Map();
-  private services: Map<any, any[]> = new Map();
 
   constructor(private constraintRegister: ConstraintRegister) {}
 
@@ -30,7 +28,7 @@ export class Register {
 
   private getParameters(method: Function): Parameter[] {
     const parameters: Parameter[] = [];
-    const paramNames = Register.getMethodParamNames(method);
+    const paramNames = EndpointRegister.getMethodParamNames(method);
     paramNames.forEach((name, index) => {
       const constraints = this.constraintRegister.get(index);
       const parameter: Parameter = { name, constraints };
@@ -39,7 +37,7 @@ export class Register {
     return parameters;
   }
 
-  registerEndpoint(
+  register(
     name: string, service: any, method: EndpointMethod, route: string,
   ): void {
     const parameters = this.getParameters(service[name]);
@@ -60,29 +58,7 @@ export class Register {
   getEndpoints() {
     return this.endpoints;
   }
-
-  registerInjection(injectionName: string, factory: Function) {
-    this.injections.set(injectionName, factory);
-  }
-
-  get injectionFactories() {
-    return this.injections.values();
-  }
-
-  get injectionNames() {
-    return this.injections.keys();
-  }
-
-
-  registerService(constructor: Function, parameterTypes: string[]) {
-    this.services.set(constructor, parameterTypes);
-  }
-
-  get serviceConstructors() {
-    return this.services.keys();
-  }
-
-  getServiceDependencies(constructor): any[] {
-    return this.services.get(constructor);
-  }
 }
+
+
+export const endpointRegister = new EndpointRegister(constraintRegister);

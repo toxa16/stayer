@@ -1,4 +1,4 @@
-export {bootstrap} from './lib/bootstrap';
+export {bootstrap, ServerOptions} from './lib/bootstrap';
 
 export {
   BadRequest, Conflict, InternalServerError, NotFound, Unauthorized
