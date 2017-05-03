@@ -41,7 +41,7 @@ export declare function bootstrap(rootService: Object, options: BootstrapOptions
 // Class decorators
 // ----------------
 
-export declare function Injection(options: InjectionOptions): (constructor: Function) => void;
+export declare function Injection(options: InjectionOptions);
 
 export declare function Service(options: ServiceOptions);
 
@@ -50,28 +50,28 @@ export declare function Service(options: ServiceOptions);
 // Method decorators
 // -----------------
 
-export declare function Post(path: string): (target: any, methodName: string) => void;
+export declare function Get(path: string);
 
-export declare function Post(path: string): (target: any, methodName: string) => void;
+export declare function Post(path: string);
 
 
 
 // Parameter decorators
 // --------------------
 
-export declare function auth(target: any, propertyKey: any, parameterIndex: any): void;
+export declare function auth(target: any, propertyKey: any, parameterIndex: any);
 
-export declare function email(target: any, propertyKey: any, parameterIndex: any): void;
+export declare function email(target: any, propertyKey: any, parameterIndex: any);
 
-export declare function maxlength(maxChars: number): (target: any, propertyKey: any, parameterIndex: any) => void;
+export declare function maxlength(maxChars: number);
 
-export declare function minlength(minChars: number): (target: any, propertyKey: any, parameterIndex: any) => void;
+export declare function minlength(minChars: number);
 
-export declare function pattern(regexp: RegExp): (target: any, propertyKey: any, parameterIndex: any) => void;
+export declare function pattern(regexp: RegExp);
 
-export declare function query(target: any, propertyKey: any, parameterIndex: any): void;
+export declare function query(target: any, propertyKey: any, parameterIndex: any);
 
-export declare function required(target: any, propertyKey: any, parameterIndex: any): void;
+export declare function required(target: any, propertyKey: any, parameterIndex: any);
 
 
 

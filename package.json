@@ -1,6 +1,6 @@
 {
   "name": "stayer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Node.js & TypeScript framework for building REST APIs.",
   "main": "./dist/index.js",
   "types": "./index.d.ts",
