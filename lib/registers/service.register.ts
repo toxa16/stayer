@@ -1,18 +1,21 @@
+import {Constructable} from '../types/constructable';
+
+
+const serviceStorage: Map<Constructable, string[]> = new Map();
+
+
 export class ServiceRegister {
-  private services: Map<any, any[]> = new Map();
 
-  register(constructor: Function, parameterTypes: string[]): void {
-    this.services.set(constructor, parameterTypes);
+  constructor(private storage: Map<Constructable, string[]>) {}
+
+  register(serviceClass: Constructable, dependencies: string[]): void {
+    this.storage.set(serviceClass, dependencies);
   }
 
-  get serviceConstructors(): IterableIterator<any> {
-    return this.services.keys();
-  }
-
-  getServiceDependencies(constructor): any[] {
-    return this.services.get(constructor);
+  get(): Map<Constructable, string[]> {
+    return this.storage;
   }
 }
 
 
-export const serviceRegister = new ServiceRegister();
+export const serviceRegister = new ServiceRegister(serviceStorage);

@@ -1,15 +1,29 @@
 import {endpointRegister} from '../../registers/endpoint.register';
 import {EndpointMethod} from '../../types/endpoint-method';
-import {logger} from '../../logger';
+import {constraintRegister} from '../../registers/constraint.register';
+import {composeEndpoint} from '../helpers/compose-endpoint';
 
 
+export function Get(path: string) {
+  return function (target: any, methodName: string) {
+    //console.log(`Get - ${methodName}`);
 
-export function Get(route: string) {
-  return function (service: any, endpointName: string) {
-    const serviceName = service.name || service.constructor.name;
-    //logger.log(`\tGet - ${serviceName}: ${endpointName}`);
+    /*const serviceName = target.name || target.constructor.name;
+    const paramNames = getParamNames(target[methodName]);
+    const parameters: Parameter[] =
+      getParameters(paramNames, constraintRegister, false);
 
-    endpointRegister.register(
-      endpointName, service, EndpointMethod.Get, route);
+    const endpoint: Endpoint = {
+      method: EndpointMethod.Get,
+      name: methodName,
+      serviceName: serviceName,
+      path: path,
+      parameters: parameters,
+    };*/
+
+    const endpoint = composeEndpoint(target, methodName,
+      EndpointMethod.Get, path, false, constraintRegister);
+
+    endpointRegister.register(endpoint);
   }
 }

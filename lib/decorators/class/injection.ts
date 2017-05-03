@@ -1,13 +1,9 @@
 import {injectionRegister} from '../../registers/injection.register';
+import {InjectionOptions} from '../../interfaces/injection.options';
 
-
-export interface InjectionOptions {
-  factory: Function;
-}
 
 export function Injection(options: InjectionOptions) {
-  return function (constructor) {
-    const injectionName = constructor.name;
-    injectionRegister.register(injectionName, options.factory());
+  return function (constructor: Function) {
+    injectionRegister.register(constructor.name, options.factory);
   }
 }

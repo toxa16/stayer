@@ -1,6 +1,7 @@
-import {ConstraintMap} from './constraint-map';
+import {Constraint} from './constraint';
+
 
 export interface Parameter {
   name: string;
-  constraints: ConstraintMap;
+  constraints: Constraint[];
 }

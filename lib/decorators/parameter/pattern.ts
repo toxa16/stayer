@@ -1,20 +1,16 @@
 import {constraintRegister} from '../../registers/constraint.register';
+import {Constraint} from '../../types/constraint';
 import {ConstraintType} from '../../types/constraint-type';
-import {logger} from '../../logger';
 
 
 export function pattern(regexp: RegExp) {
 
-  const options = { regexp };
-
   return function (target, propertyKey, parameterIndex) {
-    //logger.log(`\t\tPattern(${regexp}) - ${target.constructor.name}: ${propertyKey}: ${parameterIndex}`);
-
-    /*const constraint: Constraint = {
+    const constraint: Constraint = {
       type: ConstraintType.Pattern,
-      options: options,
-    };*/
-    constraintRegister.register(
-      ConstraintType.Pattern, parameterIndex, options);
+      parameterIndex: parameterIndex,
+      options: { regexp },
+    };
+    constraintRegister.register(constraint);
   }
 }

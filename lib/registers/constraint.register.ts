@@ -1,66 +1,107 @@
+import {Constraint} from '../types/constraint';
 import {ConstraintType} from '../types/constraint-type';
-import {ConstraintMap} from '../types/constraint-map';
+
+
+const constraintStorage: Constraint[] = [];
 
 
 export class ConstraintRegister {
-  private constraints: Map<number, ConstraintMap> = new Map();
 
-  register(
-    type: ConstraintType,
-    parameterIndex: number,
-    options: any = {}
-  ): void {
-    let map = this.constraints.get(parameterIndex);
-    if (map !== undefined) {
-      ConstraintRegister.checkRules(map, type);
-      map.set(type, options);
-    } else {
-      map = new Map().set(type, options);
-      this.constraints.set(parameterIndex, map);
+  constructor(private storage: Constraint[]) {}
+
+
+  register(constraint: Constraint): void {
+    // getting previously registered constraints
+    // for current parameter
+    const currentIndexed = this.storage.filter(
+      c => c.parameterIndex === constraint.parameterIndex);
+
+    // checking constraint rules
+    this.checkDuplicateRule(constraint, currentIndexed);
+    this.checkAuthRule(constraint, currentIndexed);
+    this.checkEmailPatternRule(constraint, currentIndexed);
+    this.checkEPMinLMaxLRule(constraint, currentIndexed);
+
+    // registering constraint
+    this.storage.push(constraint);
+  }
+
+
+  private checkDuplicateRule(constraint: Constraint, currentIndexed: Constraint[]): void {
+    const hasDuplicate = currentIndexed.some(
+      c => c.type === constraint.type);
+
+    if (hasDuplicate) {
+      throw new SyntaxError(
+        `Duplicate constraint decorator on the same parameter.`);
     }
   }
 
 
-  private static checkRules(map: ConstraintMap, type: ConstraintType) {
-    // duplicate constraint rule
-    if (map.has(type)) {
+  private checkAuthRule(constraint: Constraint, currentIndexed: Constraint[]): void {
+    const hasAuth = currentIndexed.some(
+      c => c.type === ConstraintType.Auth);
+
+    if (hasAuth || (currentIndexed.length &&
+        constraint.type === ConstraintType.Auth)) {
       throw new SyntaxError(
-        'Duplicate constraint type on the same parameter');
-    }
-
-    // auth constraint rule
-    if (map.has(ConstraintType.Auth) ||
-      (map.size > 0 && type === ConstraintType.Auth)) {
-      throw new SyntaxError(
-        'There must not be any constraints along with @auth');
-    }
-
-    // email constraint rule
-    const hasEmail = map.has(ConstraintType.Email);
-    const hasMinLength = map.has(ConstraintType.MinLength);
-    const hasPattern = map.has(ConstraintType.Pattern);
-
-    const typeEmail = (type === ConstraintType.Email);
-    const typeMinLength = (type === ConstraintType.MinLength);
-    const typePattern = (type === ConstraintType.Pattern);
-
-    const afterEmail = (hasEmail && (typeMinLength || typePattern));
-    const beforeEmail = (typeEmail && (hasMinLength || hasPattern));
-
-    if (afterEmail || beforeEmail) {
-      throw new SyntaxError(
-        'There must not be @minlength nor @pattern constraints ' +
-        'along with @email');
+        `Unable to register @auth along with another constraint.`);
     }
   }
 
 
-  get(parameterIndex: number): ConstraintMap {
-    const map = this.constraints.get(parameterIndex);
-    this.constraints.delete(parameterIndex);
-    return map;
+  private checkEmailPatternRule(constraint: Constraint, currentIndexed: Constraint[]): void {
+    const hasEmail = currentIndexed.some(
+      c => c.type === ConstraintType.Email);
+    const hasPattern = currentIndexed.some(
+      c => c.type === ConstraintType.Pattern);
+
+    const isEmail = constraint.type === ConstraintType.Email;
+    const isPattern = constraint.type === ConstraintType.Pattern;
+
+    if ((hasEmail && isPattern) || (hasPattern && isEmail)) {
+      throw new SyntaxError(
+        `Unable to register @email along with @pattern.`);
+    }
+  }
+
+
+  private checkEPMinLMaxLRule(constraint: Constraint, currentIndexed: Constraint[]): void {
+    // Group A
+    const hasMaxLength: boolean = currentIndexed.some(
+      c => c.type === ConstraintType.MaxLength);
+    const hasMinLength: boolean = currentIndexed.some(
+      c => c.type === ConstraintType.MinLength);
+
+    // Group B
+    const hasEmail: boolean = currentIndexed.some(
+      c => c.type === ConstraintType.Email);
+    const hasPattern: boolean = currentIndexed.some(
+      c => c.type === ConstraintType.Pattern);
+
+    const hasA = hasMaxLength || hasMinLength;
+    const hasB = hasEmail || hasPattern;
+
+    const isA = constraint.type === ConstraintType.MaxLength ||
+      constraint.type === ConstraintType.MinLength;
+    const isB = constraint.type === ConstraintType.Email ||
+      constraint.type === ConstraintType.Pattern;
+
+    if ((hasA && isB) || (hasB && isA)) {
+      throw new SyntaxError(
+        `Unable to register @email or @pattern ` +
+        `along with @maxlength or @minlength.`);
+    }
+  }
+
+
+  get(): Constraint[] {
+    const constraints = Array.from(this.storage);
+    this.storage.length = 0;
+    return constraints;
   }
 }
 
 
-export const constraintRegister = new ConstraintRegister();
+export const constraintRegister =
+  new ConstraintRegister(constraintStorage);

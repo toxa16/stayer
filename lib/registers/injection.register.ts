@@ -1,18 +1,21 @@
+import {StringMap} from '../types/string-map';
+
+
+const injectionStorage: StringMap<Function> = new StringMap<Function>();
+
+
 export class InjectionRegister {
-  private injections: Map<string, any> = new Map();
 
-  register(injectionName: string, factory: any) {
-    this.injections.set(injectionName, factory);
+  constructor(private storage: StringMap<Function>) {}
+
+  register(name: string, factory: Function): void {
+    this.storage.set(name, factory);
   }
 
-  get injectionFactories(): IterableIterator<Function> {
-    return this.injections.values();
-  }
-
-  get injectionNames(): IterableIterator<string> {
-    return this.injections.keys();
+  get(): StringMap<Function> {
+    return this.storage;
   }
 }
 
 
-export const injectionRegister = new InjectionRegister();
+export const injectionRegister = new InjectionRegister(injectionStorage);

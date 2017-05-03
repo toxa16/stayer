@@ -1,42 +1,49 @@
-import {injectionRegister} from './registers/injection.register';
-import {httpServer} from './http/http.server';
-import {APIDescriptor} from './types/api-descriptor';
-import {initializeInjections} from './initialize-injections';
-import {endpointRegister} from './registers/endpoint.register';
+import {createServer} from 'http';
+import {BootstrapOptions} from './interfaces/bootstrap.options';
+import {onRequest} from './http/on-request';
+import {instantiate} from './dependency-injection/instantiate';
 import {serviceRegister} from './registers/service.register';
-import {inject} from './inject';
+import {endpointRegister} from './registers/endpoint.register';
+import {resolveInjections} from './dependency-injection/resolve-injectons';
+import {injectionRegister} from './registers/injection.register';
 
 
-export interface ServerOptions {
-  port: number;
-  onListen?: (port: number) => void;
-}
+/**
+ * Launches the Stayer application server.
+ * @param rootService the root service of the application
+ * @param options BootstrapOptions bootstrapping options
+ */
+export function bootstrap(rootService: Object, options: BootstrapOptions) {
 
-export function bootstrap(rootService: Object, options: ServerOptions) {
+  // retrieving injection instances
+  resolveInjections(injectionRegister)
+    .then(injectionInstances => {
 
-  // decorators have ended their execution until here
+      // injecting dependencies and creating service instances
+      const serviceInstances =
+        instantiate(injectionInstances, serviceRegister);
 
-  initializeInjections(injectionRegister)
-    .then(injections => {
-      const serviceInstances = inject(injections, serviceRegister);
-      return new APIDescriptor(
-        endpointRegister.getEndpoints(), serviceInstances);
-    })
-    .then(descriptor => {
-      httpServer(descriptor, options)
+      // getting registered endpoints
+      const endpoints = endpointRegister.get();
+
+
+      // creating an HTTP server
+      const server = createServer();
+
+      // handling requests
+      server.on('request', function (request, response) {
+        onRequest(request, response, serviceInstances, endpoints);
+      });
+
+      // launching server
+      server.listen(options.port, function () {
+        options.onListen(server.address().port);
+      });
     })
     .catch(err => {
-      // TODO: implement CATCH correctly
-      console.log('bootstrap() function: error caught');
-      throw err;
+      // TODO: handle error correctly
+      console.log(`bootstrap(): error caught`);
+      console.log(err);
     });
 
-  /*initializeAPI(rootService, injectionRegister)
-    .then((descriptor: APIDescriptor) => {
-      httpServer(descriptor, options);
-    })
-    .catch(err => {
-      console.log('bootstrap() function: error caught');
-      throw err;
-    });*/
 }

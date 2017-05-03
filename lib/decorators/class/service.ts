@@ -1,25 +1,23 @@
 import 'reflect-metadata';
-import {logger} from '../../logger';
+import {ServiceOptions} from '../../interfaces/service.options';
+import {Constructable} from '../../types/constructable';
 import {serviceRegister} from '../../registers/service.register';
 
 
-export interface ServiceOptions {
-  basePath: string;
-  services?: any[];
-}
-
 export function Service(options: ServiceOptions) {
+  return function (serviceClass: Constructable) {
 
-  //logger.log(`Service evaluated: base path - ${options.basePath}`);
+    const paramTypes =
+      Reflect.getMetadata('design:paramtypes', serviceClass);
 
-  return function (constructor: Function) {
-    const serviceName = constructor.name;
+    const dependencies: string[] = [];
 
-    //logger.log(`${serviceName} - service executed\n`);
+    if (paramTypes) {
+      for (const type of paramTypes) {
+        dependencies.push(type.name);
+      }
+    }
 
-    const paramsTypes =
-      Reflect.getMetadata('design:paramtypes', constructor);
-
-    serviceRegister.register(constructor, paramsTypes);
+    serviceRegister.register(serviceClass, dependencies);
   }
 }

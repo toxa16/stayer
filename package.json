@@ -1,6 +1,6 @@
 {
   "name": "stayer",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Node.js & TypeScript framework for building REST APIs.",
   "main": "./dist/index.js",
   "types": "./index.d.ts",
@@ -20,10 +20,8 @@
     "url": "https://github.com/toxa16/stayer.git"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.63",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.13",
-    "lodash": "^4.17.4",
     "mocha": "^3.3.0"
   }
 }
