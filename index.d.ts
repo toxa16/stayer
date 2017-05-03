@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 
 
-// =============================
-// Stayer framework public API
-// =============================
+// ==============================
+// Stayer framework public API.
+// ==============================
 
 
 
